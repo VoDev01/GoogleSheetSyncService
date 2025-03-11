@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Events\ProductCreatedEvent;
+use App\Events\ProductDeletedEvent;
+use App\Events\ProductStatusChangedEvent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -30,4 +33,11 @@ class Product extends Model
     ];
 
     public $timestamps = false;
+
+    protected $dispatchesEvents = [
+        'updated' => ProductStatusChangedEvent::class,
+        'saved' => ProductStatusChangedEvent::class,
+        'created' => ProductCreatedEvent::class,
+        'deleted' => ProductDeletedEvent::class
+    ];
 }

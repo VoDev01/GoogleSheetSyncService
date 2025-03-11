@@ -40,9 +40,9 @@ class APIProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show(Request $request)
     {
-        $product = Product::find($product->id);
+        $product = Product::find($request->id);
         return response(['product' => $product]);
     }
 
@@ -55,7 +55,10 @@ class APIProductController extends Controller
     public function update(UpdateProductRequest $request)
     {
         $validated = $request->validated();
-        Product::where('id', $validated['id'])->update($validated);
+        $product = Product::where('id', $validated['id'])->get()->first();
+        $product->name = $validated['name'];
+        $product->status = $validated['status'];
+        $product->save();
         return response();
     }
     /**
@@ -64,9 +67,9 @@ class APIProductController extends Controller
      * @param  string $name
      * @return \Illuminate\Http\Response
      */
-    public function destroy(string $name)
+    public function destroy(Request $request)
     {
-        Product::where('name', 'like', '%'.$name.'%')->get()->first()->destroy();
+        Product::where('name', 'like', '%'.$request->name.'%')->get()->first()->destroy();
         return response();
     }
 }

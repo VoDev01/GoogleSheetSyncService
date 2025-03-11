@@ -74,7 +74,10 @@ class ProductsController extends Controller
     public function update(UpdateProductRequest $request)
     {
         $validated = $request->validated();
-        Product::where('id', $validated['id'])->update($validated);
+        $product = Product::where('id', $validated['id'])->get()->first();
+        $product->name = $validated['name'] ?? $product->name;
+        $product->status = $validated['status'];
+        $product->save();
         return redirect()->back();
     }
     public function delete()

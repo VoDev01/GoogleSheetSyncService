@@ -24,7 +24,7 @@ class ProductTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson(fn (AssertableJson $json) => 
-            $json->has('products', 15)->etc()       
+            $json->has('products.data', 15)->etc()       
         );
     }
     public function testCreate()
@@ -40,7 +40,7 @@ class ProductTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->deleteJson(env('APP_URL') . '/api/v1/products/delete', ['name' => $product->name]);
+        $response = $this->deleteJson(env('APP_URL') . '/api/v1/products/destroy', ['name' => $product->name]);
 
         $response->assertOk();
         $this->assertDatabaseMissing('products', ['id' => $product->id]);
@@ -49,7 +49,7 @@ class ProductTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->patchJson(env('APP_URL') . '/api/v1/products/update', ['name' => 'product']);
+        $response = $this->patchJson(env('APP_URL') . '/api/v1/products/update', ['id' => $product->id, 'name' => 'product']);
 
         $response->assertOk();
         $this->assertDatabaseHas('products', ['name' => 'product']);

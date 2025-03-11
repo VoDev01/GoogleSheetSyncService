@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\ProductDeletedEvent;
+use App\Events\ProductStatusChangedEvent;
+use App\Listeners\ChangeSheetOnProductStatus;
+use App\Listeners\DeleteSheetCellOnProductDelete;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -27,6 +31,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Event::listen(ProductStatusChangedEvent::class, [ChangeSheetOnProductStatus::class, 'handle']);
+        Event::listen(ProductDeletedEvent::class, [DeleteSheetCellOnProductDelete::class, 'handle']);
     }
 }

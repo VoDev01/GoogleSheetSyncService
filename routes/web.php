@@ -20,11 +20,11 @@ Route::get('/', function () {
 Route::controller(ProductsController::class)->prefix('products')->group(function (){
     Route::get('index', 'index');
     Route::get('update', 'edit');
-    Route::post('update/{id}', 'update');
+    Route::post('update', 'update');
     Route::get('create', 'create');
     Route::post('create', 'store');
     Route::get('destroy', 'delete');
-    Route::post('destroy/{id}', 'destroy');
+    Route::post('destroy', 'destroy');
     Route::post('generate', 'generate');
     Route::post('clear', 'clear');
 });

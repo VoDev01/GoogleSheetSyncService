@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::controller(APIProductController::class)->prefix('products')->group(function (){
     Route::get('index', 'index');
     Route::get('show', 'show');
-    Route::patch('update/{id}', 'update');
+    Route::patch('update', 'update');
     Route::post('create', 'store');
-    Route::delete('destroy/{id}', 'destroy');
+    Route::delete('destroy', 'destroy');
 });
