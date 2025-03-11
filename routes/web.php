@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProductsController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,6 +17,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+Route::get('/fetch/{count?}', function($count = null){
+    Artisan::call('gsheet:fetch', ['count' => $count]);
+    dd(Artisan::output());
 });
 Route::controller(ProductsController::class)->prefix('products')->group(function (){
     Route::get('index', 'index');
