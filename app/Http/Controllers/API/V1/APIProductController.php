@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use Exception;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -10,15 +11,22 @@ use App\Http\Requests\UpdateProductRequest;
 
 class APIProductController extends Controller
 {
-        /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $products = Product::paginate(15);
-        return response(['products' => $products]);
+        try
+        {
+            $products = Product::paginate(15);
+        }
+        catch (Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+        return response()->json(['products' => $products]);
     }
 
     /**
@@ -30,8 +38,15 @@ class APIProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $validated = $request->validated();
-        Product::create($validated);
-        return response();
+        try
+        {
+            Product::create(array_combine(array_keys($validated), array_values($validated)));
+        }
+        catch (Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+        return response()->json();
     }
 
     /**
@@ -42,8 +57,15 @@ class APIProductController extends Controller
      */
     public function show(Request $request)
     {
-        $product = Product::find($request->id);
-        return response(['product' => $product]);
+        try
+        {
+            $product = Product::find($request->id);
+        }
+        catch (Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+        return response()->json(['product' => $product]);
     }
 
     /**
@@ -55,11 +77,18 @@ class APIProductController extends Controller
     public function update(UpdateProductRequest $request)
     {
         $validated = $request->validated();
-        $product = Product::where('id', $validated['id'])->get()->first();
-        $product->name = $validated['name'];
-        $product->status = $validated['status'];
-        $product->save();
-        return response();
+        try
+        {
+            $product = Product::where('id', $validated['id'])->get()->first();
+            $product->name = $validated['name'] ?? $product->name;
+            $product->status = $validated['status'] ?? $product->status;
+            $product->save();
+        }
+        catch (Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+        return response()->json();
     }
     /**
      * Remove the specified resource from storage.
@@ -69,7 +98,14 @@ class APIProductController extends Controller
      */
     public function destroy(Request $request)
     {
-        Product::where('name', 'like', '%'.$request->name.'%')->get()->first()->destroy();
-        return response();
+        try
+        {
+            Product::where('name', 'like', '%' . $request->name . '%')->get()->first()->delete();
+        }
+        catch (Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+        return response()->json();
     }
 }

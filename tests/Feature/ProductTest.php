@@ -5,12 +5,13 @@ namespace Tests\Feature;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\WithoutEvents;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithoutEvents;
     /**
      * A basic feature test example.
      *
@@ -34,7 +35,7 @@ class ProductTest extends TestCase
         $response = $this->postJson(env('APP_URL') . '/api/v1/products/create', ['name' => $product->name, 'status' => $product->status]);
 
         $response->assertOk();
-        $this->assertDatabaseHas('products', ['name' => $product, 'status' => $product]);
+        $this->assertDatabaseHas('products', ['name' => $product->name, 'status' => $product->status]);
     }
     public function testDestroy()
     {

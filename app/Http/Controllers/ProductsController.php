@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class ProductsController extends Controller
 {
@@ -38,8 +41,11 @@ class ProductsController extends Controller
     public function store(StoreProductRequest $request)
     {
         $validated = $request->validated();
-        Product::create($validated);
-        return redirect()->back();
+        $response = Http::post(env('APP_URL') . '/api/v1/products/create', ['name' => $validated['name'], 'status' => $validated['status']]);
+        if($response->ok())
+            return redirect()->back();
+        else
+            return redirect()->back()->withException(throw new Exception($response->json('message')));
     }
 
     /**
@@ -50,8 +56,11 @@ class ProductsController extends Controller
      */
     public function show(Product $product)
     {
-        $product = Product::find($product->id);
-        return redirect()->back();
+        $response = Http::post(env('APP_URL') . '/api/v1/products/show', ['id' => $product->id]);
+        if($response->ok())
+            return redirect()->back();
+        else
+            return redirect()->back()->withException(throw new Exception($response->json('message')));
     }
 
     /**
@@ -74,11 +83,11 @@ class ProductsController extends Controller
     public function update(UpdateProductRequest $request)
     {
         $validated = $request->validated();
-        $product = Product::where('id', $validated['id'])->get()->first();
-        $product->name = $validated['name'] ?? $product->name;
-        $product->status = $validated['status'];
-        $product->save();
-        return redirect()->back();
+        $response = Http::post(env('APP_URL') . '/api/v1/products/update', ['name' => $validated['name'], 'status' => $validated['status']]);
+        if($response->ok())
+            return redirect()->back();
+        else
+            return redirect()->back()->withException(throw new Exception($response->json('message')));
     }
     public function delete()
     {
@@ -90,10 +99,13 @@ class ProductsController extends Controller
      * @param  string $name
      * @return \Illuminate\Http\Response
      */
-    public function destroy(string $name)
+    public function destroy(Request $request)
     {
-        Product::where('name', 'like', '%'.$name.'%')->get()->first()->destroy();
-        return redirect()->back();
+        $response = Http::post(env('APP_URL') . '/api/v1/products/destroy', ['id' => $request->name]);
+        if($response->ok())
+            return redirect()->back();
+        else
+            return redirect()->back()->withException(throw new Exception($response->json('message')));
     }
 
     /**
